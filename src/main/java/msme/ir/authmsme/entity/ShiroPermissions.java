@@ -41,9 +41,7 @@ public class ShiroPermissions  implements java.io.Serializable {
        this.shiroRoleses = shiroRoleses;
     }
    
-     @Id 
-
-    
+    @Id
     @Column(name="name", unique=true, nullable=false, length=20)
     public String getName() {
         return this.name;

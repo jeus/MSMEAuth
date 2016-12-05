@@ -1,9 +1,12 @@
 package msme.ir.authmsme.dao;
 
+import java.util.List;
+import javax.persistence.criteria.CriteriaQuery;
 import msme.ir.authmsme.entity.ShiroUsers;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 public class UserDao {
 
@@ -24,14 +27,11 @@ public class UserDao {
         ShiroUsers user = null;
         try {
             tx = session.beginTransaction();
-            user = (ShiroUsers) session.createQuery("FROM ShiroUsers").uniqueResult();
-            if (user != null) {
-                System.out.print("personalNumber: " + user.getPersonalNumber());
-                System.out.print("getLastName" + user.getUserName());
-                System.out.println("salt" + user.getSalt());
 
-                tx.commit();
-            }
+            user = session.createQuery(" From shiroUser s where s.userName = ?",
+                    ShiroUsers.class).setParameter(0, userName).getSingleResult();
+            tx.commit();
+
         } catch (HibernateException e) {
             if (tx != null) {
                 tx.rollback();
