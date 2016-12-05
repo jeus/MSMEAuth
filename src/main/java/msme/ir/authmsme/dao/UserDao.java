@@ -63,4 +63,25 @@ public class UserDao {
             session.close();
         }
     }
+
+    public void updatePassword(String userName, String password) {
+        Session session = TestUtil.getSessionFactory().openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            ShiroUsers shiroUser = null;
+            if ((shiroUser = getUser(userName)) != null) {
+                shiroUser.setPassword(password);
+                session.update(shiroUser);
+                tx.commit();
+            }
+        } catch (HibernateException e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
 }
