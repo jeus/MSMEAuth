@@ -54,7 +54,6 @@ public class UserDao {
             tx = session.beginTransaction();
             ShiroUser shiroUsers = null;
             if ((shiroUsers = getUser(userName)) != null) {
-                System.out.println("INJA HAM OMAD=====================================");
                 session.delete(shiroUsers);
                 tx.commit();
             }

@@ -4,9 +4,12 @@
  * and open the template in the editor.
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import msme.ir.authmsme.dao.PermissionDao;
 import msme.ir.authmsme.dao.RoleDao;
 import msme.ir.authmsme.dao.UserDao;
+import msme.ir.authmsme.entity.ShiroPermission;
 import msme.ir.authmsme.entity.ShiroRole;
 import msme.ir.authmsme.entity.ShiroUser;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
@@ -24,13 +27,15 @@ import static org.junit.Assert.*;
  */
 public class ShiroUserTest {
 
+    List<ShiroRole> roles = new ArrayList<>();
+
     public ShiroUserTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
-       UserDao dao = new UserDao();
-       dao.removeUser("InsertDeleteTest");
+        UserDao dao = new UserDao();
+        dao.removeUser("InsertDeleteTest");
 
     }
 
@@ -68,28 +73,27 @@ public class ShiroUserTest {
         assertFalse(passwordService.passwordsMatch(users.getPassword(), passwordService.encryptPassword("a123456B")));
     }
 
-//    @Test
-    public void UserCall() {
+    @Test
+    public void UserRole() {
         UserDao dao = new UserDao();
         ShiroUser users = dao.getUser("jeus");
-        
+
         RoleDao rDao = new RoleDao();
-        List<ShiroRole> roles  = rDao.getRoles(users.getUserName());
+        roles = rDao.getRoles(users.getUserName());
+
         assertEquals(roles.get(0).getName(), "Admin");
         assertEquals(roles.get(0).getDescription(), "مدیریت اصلی");
     }
 
     @Test
-    public void UserRole() {
-    }
-
-    @Test
     public void UserPermission() {
+        UserDao dao = new UserDao();
+        ShiroUser users = dao.getUser("jeus");
+
+        PermissionDao pDao = new PermissionDao();
+        List<ShiroPermission> permissions = pDao.getPermissions("Admin");
+        assertEquals(permissions.get(0).getName(), "panel1");
+
     }
 
-// TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
 }

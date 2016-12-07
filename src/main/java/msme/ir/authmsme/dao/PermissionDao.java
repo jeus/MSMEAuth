@@ -35,8 +35,8 @@ public class PermissionDao {
         List<ShiroPermission> permission = new ArrayList<>();
         try {
             tx = session.beginTransaction();
-            permission = session.createQuery("FROM ShiroPermissions s WHERE s."
-                    + "shiroRoleses = ?").setParameter(0, roleName).list();
+            permission = session.createQuery("FROM ShiroPermission s WHERE s."
+                    + "role = ?").setParameter(0, roleName).list();
             tx.commit();
 
         } catch (HibernateException e) {

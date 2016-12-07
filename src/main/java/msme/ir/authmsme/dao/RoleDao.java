@@ -37,8 +37,10 @@ public class RoleDao {
         List<ShiroRole> roles = new ArrayList<>();
         try {
             tx = sessionLocal.beginTransaction();
-            roles = sessionLocal.createQuery("FROM ShiroRoles r WHERE r.user_name"
-                    + " = ?",ShiroRole.class).setParameter(0, userName).getResultList();
+            roles = sessionLocal.createQuery("SELECT sr FROM ShiroUser su join "
+                    + "su.shiroRoles sr WHERE su.userName=?",ShiroRole.class)
+//            roles = sessionLocal.createQuery("FROM ShiroRole r join r.shiroUsers su WHERE su.userName=?",ShiroRole.class)
+                    .setParameter(0, userName).getResultList();
             tx.commit();
 
         } catch (HibernateException e) {

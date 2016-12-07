@@ -7,7 +7,6 @@ package msme.ir.authmsme;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import msme.ir.authmsme.entity.ShiroUser;
 import msme.ir.authmsme.user.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

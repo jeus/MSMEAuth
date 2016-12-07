@@ -100,7 +100,7 @@ public class ShiroUser implements java.io.Serializable {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "shiro_user_role", catalog = "authmsme", joinColumns = {
         @JoinColumn(name = "user_name", nullable = false, updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "roles", nullable = false, updatable = false)})
+        @JoinColumn(name = "role", nullable = false, updatable = false)})
     public Set getShiroRoles() {
         return this.shiroRoles;
     }
