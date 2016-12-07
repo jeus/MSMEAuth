@@ -1,18 +1,19 @@
 package msme.ir.authmsme.dao;
 
-import java.util.List;
-import javax.persistence.criteria.CriteriaQuery;
-import msme.ir.authmsme.entity.ShiroUsers;
+import javax.persistence.NoResultException;
+import msme.ir.authmsme.entity.ShiroUser;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserDao {
 
     static Session session = null;
+    private static final transient Logger log = LoggerFactory.getLogger(UserDao.class);
 
-    public void insert(ShiroUsers e) {
+    public void insert(ShiroUser e) {
         session = TestUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.save(e);
@@ -21,22 +22,25 @@ public class UserDao {
         session.close();
     }
 
-    public ShiroUsers getUser(String userName) {
+    public ShiroUser getUser(String userName) {
         Session session = TestUtil.getSessionFactory().openSession();
         Transaction tx = null;
-        ShiroUsers user = null;
+        ShiroUser user = null;
         try {
             tx = session.beginTransaction();
 
-            user = session.createQuery(" From shiroUser s where s.userName = ?",
-                    ShiroUsers.class).setParameter(0, userName).getSingleResult();
-            tx.commit();
-
+            if ((user = session.createQuery("From ShiroUser s where s.userName=?",
+                    ShiroUser.class).setParameter(0, userName)
+                    .getSingleResult()) != null) {
+                tx.commit();
+            }
+        } catch (NoResultException nre) {
+            log.error(nre.getMessage());
         } catch (HibernateException e) {
             if (tx != null) {
                 tx.rollback();
             }
-            e.printStackTrace();
+            log.error(e.getMessage());
         } finally {
             session.close();
         }
@@ -48,7 +52,7 @@ public class UserDao {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            ShiroUsers shiroUsers = null;
+            ShiroUser shiroUsers = null;
             if ((shiroUsers = getUser(userName)) != null) {
                 System.out.println("INJA HAM OMAD=====================================");
                 session.delete(shiroUsers);
@@ -69,7 +73,7 @@ public class UserDao {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            ShiroUsers shiroUser = null;
+            ShiroUser shiroUser = null;
             if ((shiroUser = getUser(userName)) != null) {
                 shiroUser.setPassword(password);
                 session.update(shiroUser);

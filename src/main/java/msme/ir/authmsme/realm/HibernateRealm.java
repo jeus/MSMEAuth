@@ -17,15 +17,13 @@
  * under the License.
  */
 /**
- * Realm that allows authentication and authorization via JDBC calls.  The default queries suggest a potential schema
- * for retrieving the user's password for authentication, and querying for a user's roles and permissions.  The
- * default queries can be overridden by setting the query properties of the realm.
+ * Realm that allows authentication and authorization via Hibernate Dao calls.  
  * <p/>
  * If the default implementation of authentication and authorization cannot
  * handle your schema, this class can be subclassed and the appropriate methods
  * overridden. (usually {@link #doGetAuthenticationInfo(org.apache.shiro.authc.AuthenticationToken)},
- * {@link #getRoleNamesForUser(java.sql.Connection,String)}, and/or
- * {@link #getPermissions(java.sql.Connection,String,java.util.Collection)}
+ * {@link #getRoleNamesForUser(String)}, and/or
+ * {@link #getPermissions(String,java.util.Collection)}
  * <p/>
  * This realm supports caching by extending from
  * {@link org.apache.shiro.realm.AuthorizingRealm}.
@@ -35,11 +33,9 @@
 package msme.ir.authmsme.realm;
 
 import msme.ir.authmsme.dao.UserDao;
-import msme.ir.authmsme.entity.ShiroUsers;
-import msme.ir.authmsme.login.MySaltedAuthentificationInfo;
+import msme.ir.authmsme.entity.ShiroUser;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SaltedAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.realm.jdbc.JdbcRealm;
 import org.apache.shiro.authc.*;
@@ -47,7 +43,6 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.config.ConfigurationException;
-import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.JdbcUtils;
@@ -67,41 +62,14 @@ import java.util.List;
 import java.util.Set;
 import msme.ir.authmsme.dao.PermissionDao;
 import msme.ir.authmsme.dao.RoleDao;
-import msme.ir.authmsme.entity.ShiroPermissions;
-import msme.ir.authmsme.entity.ShiroRoles;
+import msme.ir.authmsme.entity.ShiroPermission;
+import msme.ir.authmsme.entity.ShiroRole;
 
 /**
  *
  * @author jeus
  */
 public class HibernateRealm extends JdbcRealm {
-
-    //TODO - complete JavaDoc
-
-    /*--------------------------------------------
-    |             C O N S T A N T S             |
-    ============================================*/
-    /**
-     * The default query used to retrieve account data for the user.
-     */
-    protected static final String DEFAULT_AUTHENTICATION_QUERY = "select password from users where username = ?";
-
-    /**
-     * The default query used to retrieve account data for the user when
-     * {@link #saltStyle} is COLUMN.
-     */
-    protected static final String DEFAULT_SALTED_AUTHENTICATION_QUERY = "select password, password_salt from users where username = ?";
-
-    /**
-     * The default query used to retrieve the roles that apply to a user.
-     */
-    protected static final String DEFAULT_USER_ROLES_QUERY = "select role_name from user_roles where username = ?";
-
-    /**
-     * The default query used to retrieve permissions that apply to a particular
-     * role.
-     */
-    protected static final String DEFAULT_PERMISSIONS_QUERY = "select permission from roles_permissions where role_name = ?";
 
     private static final Logger log = LoggerFactory.getLogger(HibernateRealm.class);
 
@@ -120,16 +88,6 @@ public class HibernateRealm extends JdbcRealm {
     /*--------------------------------------------
     |    I N S T A N C E   V A R I A B L E S    |
     ============================================*/
-    protected DataSource dataSource;
-
-    protected String authenticationQuery = DEFAULT_AUTHENTICATION_QUERY;
-
-    protected String userRolesQuery = DEFAULT_USER_ROLES_QUERY;
-
-    protected String permissionsQuery = DEFAULT_PERMISSIONS_QUERY;
-
-    protected boolean permissionsLookupEnabled = false;
-
     protected SaltStyle saltStyle = SaltStyle.NO_SALT;
 
     /*--------------------------------------------
@@ -179,31 +137,6 @@ public class HibernateRealm extends JdbcRealm {
      */
     public void setUserRolesQuery(String userRolesQuery) {
         this.userRolesQuery = userRolesQuery;
-    }
-
-    /**
-     * Overrides the default query used to retrieve a user's permissions during
-     * authorization. When using the default implementation, this query must
-     * take a role name as the single parameter and return a row per permission
-     * with three columns containing the fully qualified name of the permission
-     * class, the permission name, and the permission actions (in that order).
-     * If you require a solution that does not match this query structure, you
-     * can override
-     * {@link #doGetAuthorizationInfo(org.apache.shiro.subject.PrincipalCollection)}
-     * or just
-     * {@link #getPermissions(java.sql.Connection,String,java.util.Collection)}</p>
-     * <p/>
-     * <b>Permissions are only retrieved if you set
-     * {@link #permissionsLookupEnabled} to true. Otherwise, this query is
-     * ignored.</b>
-     *
-     * @param permissionsQuery the query to use for retrieving permissions for a
-     * role.
-     * @see #DEFAULT_PERMISSIONS_QUERY
-     * @see #setPermissionsLookupEnabled(boolean)
-     */
-    public void setPermissionsQuery(String permissionsQuery) {
-        this.permissionsQuery = permissionsQuery;
     }
 
     /**
@@ -312,7 +245,7 @@ public class HibernateRealm extends JdbcRealm {
         ResultSet rs = null;
         try {
             UserDao userDao = new UserDao();
-            ShiroUsers shiroUser = null;
+            ShiroUser shiroUser = null;
 
             //Add the user object to the session
             if ((shiroUser = userDao.getUser(username)) == null) {
@@ -376,10 +309,10 @@ public class HibernateRealm extends JdbcRealm {
         try {
 
             RoleDao roleDao = new RoleDao();
-            List<ShiroRoles> roles = new ArrayList<>();
+            List<ShiroRole> roles = new ArrayList<>();
             roles = roleDao.getRoles(username);
             // Loop over results and add each returned role to a set
-            Iterator<ShiroRoles> it = roles.iterator();
+            Iterator<ShiroRole> it = roles.iterator();
             while (it.hasNext()) {
                 String roleName = it.next().getName();
                 // Add the role to the list of names if it isn't null
@@ -400,11 +333,11 @@ public class HibernateRealm extends JdbcRealm {
         Set<String> permissions = new LinkedHashSet<String>();
         try {
             PermissionDao permDao = new PermissionDao();
-            List<ShiroPermissions> shiroPermissions = new ArrayList<>();
+            List<ShiroPermission> shiroPermissions = new ArrayList<>();
             for (String roleName : roleNames) {
 
                 shiroPermissions = permDao.getPermissions(roleName);
-                Iterator<ShiroPermissions> it = shiroPermissions.iterator();
+                Iterator<ShiroPermission> it = shiroPermissions.iterator();
                 // Loop over results and add each returned role to a set
                 while (it.hasNext()) {
                     String permissionString = it.next().getName();

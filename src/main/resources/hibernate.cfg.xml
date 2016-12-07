@@ -9,8 +9,8 @@
     <property name="hibernate.connection.pool_size">10</property>
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.show_sql">true</property>
-    <mapping resource="msme/ir/authmsme/entity/ShiroUsers.hbm.xml"/>
-    <mapping resource="msme/ir/authmsme/entity/ShiroRoles.hbm.xml"/>
-    <mapping resource="msme/ir/authmsme/entity/ShiroPermissions.hbm.xml"/>
+    <mapping resource="msme/ir/authmsme/entity/ShiroUser.hbm.xml"/>
+    <mapping resource="msme/ir/authmsme/entity/ShiroRole.hbm.xml"/>
+    <mapping resource="msme/ir/authmsme/entity/ShiroPermission.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

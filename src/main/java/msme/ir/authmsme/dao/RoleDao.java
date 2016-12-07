@@ -7,8 +7,8 @@ package msme.ir.authmsme.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import msme.ir.authmsme.entity.ShiroPermissions;
-import msme.ir.authmsme.entity.ShiroRoles;
+import msme.ir.authmsme.entity.ShiroPermission;
+import msme.ir.authmsme.entity.ShiroRole;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -21,7 +21,7 @@ public class RoleDao {
 
     static Session session = null;
 
-    public void insert(ShiroRoles e) {
+    public void insert(ShiroRole e) {
         session = TestUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.save(e);
@@ -30,15 +30,15 @@ public class RoleDao {
         session.close();
     }
 
-    public List<ShiroRoles> getRoles(String userName) {
+    public List<ShiroRole> getRoles(String userName) {
         Session sessionLocal;
         sessionLocal = TestUtil.getSessionFactory().openSession();
         Transaction tx = null;
-        List<ShiroRoles> roles = new ArrayList<>();
+        List<ShiroRole> roles = new ArrayList<>();
         try {
             tx = sessionLocal.beginTransaction();
-            roles = sessionLocal.createQuery("FROM ShiroRoles r Where r.userName"
-                    + " = ?",ShiroRoles.class).setParameter(0, userName).getResultList();
+            roles = sessionLocal.createQuery("FROM ShiroRoles r WHERE r.user_name"
+                    + " = ?",ShiroRole.class).setParameter(0, userName).getResultList();
             tx.commit();
 
         } catch (HibernateException e) {

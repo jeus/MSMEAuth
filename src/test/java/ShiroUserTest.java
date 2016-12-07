@@ -4,8 +4,11 @@
  * and open the template in the editor.
  */
 
+import java.util.List;
+import msme.ir.authmsme.dao.RoleDao;
 import msme.ir.authmsme.dao.UserDao;
-import msme.ir.authmsme.entity.ShiroUsers;
+import msme.ir.authmsme.entity.ShiroRole;
+import msme.ir.authmsme.entity.ShiroUser;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.junit.After;
@@ -26,8 +29,8 @@ public class ShiroUserTest {
 
     @BeforeClass
     public static void setUpClass() {
-        UserDao dao = new UserDao();
-        dao.removeUser("jeus");
+       UserDao dao = new UserDao();
+       dao.removeUser("InsertDeleteTest");
 
     }
 
@@ -46,16 +49,16 @@ public class ShiroUserTest {
     @Test
     public void UserInsert() {
 
-        ShiroUsers users = new ShiroUsers();
-        users.setUserName("jeus");
-        users.setPersonalNumber("jeus");
-        users.setPassword("A123456B");
-        users.setSalt("123456");
+        ShiroUser users = new ShiroUser();
+        users.setUserName("InsertDeleteTest");
+        users.setPersonalNumber("InsertDeleteTest");
+        users.setPassword("A123456B1");
+        users.setSalt("1234563");
         users.setActive(true);
         UserDao dao = new UserDao();
         dao.insert(users);
 
-        ShiroUsers expectedUser = dao.getUser("jeus");
+        ShiroUser expectedUser = dao.getUser("InsertDeleteTest");
 
         assertEquals(users.getSalt(), expectedUser.getSalt());
         assertEquals(users.getPersonalNumber(), expectedUser.getPersonalNumber());
@@ -65,7 +68,26 @@ public class ShiroUserTest {
         assertFalse(passwordService.passwordsMatch(users.getPassword(), passwordService.encryptPassword("a123456B")));
     }
 
-    // TODO add test methods here.
+//    @Test
+    public void UserCall() {
+        UserDao dao = new UserDao();
+        ShiroUser users = dao.getUser("jeus");
+        
+        RoleDao rDao = new RoleDao();
+        List<ShiroRole> roles  = rDao.getRoles(users.getUserName());
+        assertEquals(roles.get(0).getName(), "Admin");
+        assertEquals(roles.get(0).getDescription(), "مدیریت اصلی");
+    }
+
+    @Test
+    public void UserRole() {
+    }
+
+    @Test
+    public void UserPermission() {
+    }
+
+// TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
     // @Test

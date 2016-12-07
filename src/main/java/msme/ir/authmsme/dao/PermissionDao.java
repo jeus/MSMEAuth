@@ -7,7 +7,7 @@ package msme.ir.authmsme.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import msme.ir.authmsme.entity.ShiroPermissions;
+import msme.ir.authmsme.entity.ShiroPermission;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -20,7 +20,7 @@ public class PermissionDao {
 
     static Session session = null;
 
-    public void insert(ShiroPermissions e) {
+    public void insert(ShiroPermission e) {
         session = TestUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.save(e);
@@ -29,10 +29,10 @@ public class PermissionDao {
         session.close();
     }
 
-    public List<ShiroPermissions> getPermissions(String roleName) {
+    public List<ShiroPermission> getPermissions(String roleName) {
         Session session = TestUtil.getSessionFactory().openSession();
         Transaction tx = null;
-        List<ShiroPermissions> permission = new ArrayList<>();
+        List<ShiroPermission> permission = new ArrayList<>();
         try {
             tx = session.beginTransaction();
             permission = session.createQuery("FROM ShiroPermissions s WHERE s."
@@ -50,14 +50,14 @@ public class PermissionDao {
         return permission;
     }
 
-    public ShiroPermissions getPermission(String permissName) {
+    public ShiroPermission getPermission(String permissName) {
         Session session = TestUtil.getSessionFactory().openSession();
         Transaction tx = null;
-        ShiroPermissions permission = null;
+        ShiroPermission permission = null;
         try {
             tx = session.beginTransaction();
             permission = session.createQuery("FROM ShiroPermissions s WHERE s."
-                    + "name = ?", ShiroPermissions.class).setParameter(0, permissName).getSingleResult();
+                    + "name = ?", ShiroPermission.class).setParameter(0, permissName).getSingleResult();
             tx.commit();
 
         } catch (HibernateException e) {

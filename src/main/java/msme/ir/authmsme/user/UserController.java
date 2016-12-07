@@ -1,7 +1,7 @@
 package msme.ir.authmsme.user;
 
 import msme.ir.authmsme.dao.UserDao;
-import msme.ir.authmsme.entity.ShiroUsers;
+import msme.ir.authmsme.entity.ShiroUser;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
@@ -24,7 +24,6 @@ public class UserController {
         }
         Subject subject = SecurityUtils.getSubject();
         subject.getSession(true);
-
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 
         try {
@@ -48,7 +47,7 @@ public class UserController {
             return "";
         }
         UserDao userDao = new UserDao();
-        ShiroUsers shiroUser = null;
+        ShiroUser shiroUser = null;
 
         //Add the user object to the session
         if ((shiroUser = userDao.getUser(username)) == null) {
@@ -56,9 +55,6 @@ public class UserController {
         }
         subject.getSession().setAttribute("user", shiroUser);
         return (String) subject.getSession().getId();
-//        PasswordService passwordService = new DefaultPasswordService();
-//        char[] chararray = password.toCharArray();
-//        return passwordService.passwordsMatch(chararray, shiroUsers.getPassword());
     }
 
     // This method call updatePassword in Dao and change password after authenticate userName and pass is valid.

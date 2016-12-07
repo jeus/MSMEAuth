@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Nov 30, 2016 12:43:01 PM by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
-    <class name="msme.ir.authmsme.entity.ShiroUsers" table="shiro_users" catalog="authmsme" optimistic-lock="version">
+    <class name="msme.ir.authmsme.entity.ShiroUser" table="shiro_user" catalog="authmsme" optimistic-lock="version">
         <id name="personalNumber" type="string">
             <column name="personal_number" length="45" />
             <generator class="assigned" />
@@ -20,11 +20,11 @@
         <property name="active" type="boolean">
             <column name="active" not-null="true" />
         </property>
-        <set name="shiroRoleses" table="shiro_users_roles" inverse="false" lazy="true" fetch="select">
+        <set name="ShiroRoles" table="shiro_user_role" inverse="false" lazy="true" fetch="select">
             <key>
                 <column name="user_name" length="45" not-null="true" />
             </key>
-            <many-to-many entity-name="msme.ir.authmsme.entity.ShiroRoles">
+            <many-to-many entity-name="msme.ir.authmsme.entity.ShiroRole">
                 <column name="role" length="30" not-null="true" />
             </many-to-many>
         </set>
