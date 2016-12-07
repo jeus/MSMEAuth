@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +60,7 @@ public class ShiroUserTest {
         dao.insert(users);
 
         ShiroUser expectedUser = dao.getUser("InsertDeleteTest");
-
+        
         assertEquals(users.getSalt(), expectedUser.getSalt());
         assertEquals(users.getPersonalNumber(), expectedUser.getPersonalNumber());
         assertEquals(users.getUserName(), expectedUser.getUserName());
@@ -89,7 +85,7 @@ public class ShiroUserTest {
     public void UserPermission() {
         UserDao dao = new UserDao();
         ShiroUser users = dao.getUser("jeus");
-
+        
         PermissionDao pDao = new PermissionDao();
         List<ShiroPermission> permissions = pDao.getPermissions("Admin");
         assertEquals(permissions.get(0).getName(), "panel1");

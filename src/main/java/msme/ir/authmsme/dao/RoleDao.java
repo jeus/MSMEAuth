@@ -39,7 +39,6 @@ public class RoleDao {
             tx = sessionLocal.beginTransaction();
             roles = sessionLocal.createQuery("SELECT sr FROM ShiroUser su join "
                     + "su.shiroRoles sr WHERE su.userName=?",ShiroRole.class)
-//            roles = sessionLocal.createQuery("FROM ShiroRole r join r.shiroUsers su WHERE su.userName=?",ShiroRole.class)
                     .setParameter(0, userName).getResultList();
             tx.commit();
 

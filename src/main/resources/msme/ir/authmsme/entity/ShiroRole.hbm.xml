@@ -18,7 +18,7 @@
         <column length="45" name="user_name" not-null="true"/>
       </many-to-many>
     </set>
-    <set fetch="select" inverse="false" lazy="true" name="ShiroPermissions" table="shiro_role_permission">
+    <set fetch="select" inverse="false" lazy="true" name="shiroPermissions" table="shiro_role_permission">
       <key>
         <column length="20" name="role" not-null="true"/>
       </key>

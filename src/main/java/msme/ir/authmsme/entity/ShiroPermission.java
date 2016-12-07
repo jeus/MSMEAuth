@@ -63,8 +63,8 @@ public class ShiroPermission  implements java.io.Serializable {
 
 @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(name="shiro_role_permission", catalog="authmsme", joinColumns = { 
-        @JoinColumn(name="permissions", nullable=false, updatable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="roles", nullable=false, updatable=false) })
+        @JoinColumn(name="permission", nullable=false, updatable=false) }, inverseJoinColumns = { 
+        @JoinColumn(name="role", nullable=false, updatable=false) })
     public Set getShiroRoles() {
         return this.shiroRoles;
     }

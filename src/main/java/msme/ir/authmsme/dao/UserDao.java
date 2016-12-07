@@ -29,7 +29,7 @@ public class UserDao {
         try {
             tx = session.beginTransaction();
 
-            if ((user = session.createQuery("From ShiroUser s where s.userName=?",
+            if ((user = session.createQuery("From ShiroUser s WHERE s.userName=?",
                     ShiroUser.class).setParameter(0, userName)
                     .getSingleResult()) != null) {
                 tx.commit();
